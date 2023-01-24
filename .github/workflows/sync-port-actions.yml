@@ -27,7 +27,7 @@ jobs:
          PORT_CLIENT_SECRET: ${{ secrets.PORT_CLIENT_SECRET }}
          MODULE_NAME: GoogleCloudPlatform/cloud-run/google
          MODULE_VERSIONS: "0.4.0,0.3.0"
-         MODULE_EXAMPLES: "cloud_run_vpc_connector,secure_cloud_run,simple_cloud_run"
+         MODULE_EXAMPLES: "secure_cloud_run_standalone,secure_cloud_run,simple_cloud_run"
          API_URL: https://api.getport.io/v1
          BLUEPRINT_IDENTIFIER: cloud-run
        run: |
