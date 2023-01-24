@@ -1,7 +1,7 @@
 name: Sync actions to Port from terraform module
 
 on:
-  workflow_call:
+  workflow_dispatch:
     secrets: 
       PORT_CLIENT_ID: 
         required: true
