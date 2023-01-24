@@ -97,7 +97,7 @@ def build_input(input, input_final_json_properties, input_final_json_required):
     elif 'object' in input['type'] or 'map' in input['type'] :
         type = 'object'
 
-    if input['default'] != '':
+    if input['default'] == '' | input['default'] == None:
         if input['required']:
             input_final_json_required.append(input['name'])
 
