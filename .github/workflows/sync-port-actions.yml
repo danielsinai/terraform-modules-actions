@@ -25,7 +25,7 @@ jobs:
          TF_CLOUD_TOKEN: ${{ secrets.TF_CLOUD_TOKEN }}
          PORT_CLIENT_ID: ${{ secrets.PORT_CLIENT_ID }}
          PORT_CLIENT_SECRET: ${{ secrets.PORT_CLIENT_SECRET }}
-         MODULE_NAME: terraform-google-modules/cloud-run/google
+         MODULE_NAME: GoogleCloudPlatform/cloud-run/google
          MODULE_VERSIONS: "0.4.0,0.3.0"
          MODULE_EXAMPLES: "cloud_run_vpc_connector,secure_cloud_run,simple_cloud_run"
          API_URL: https://api.getport.io/v1
