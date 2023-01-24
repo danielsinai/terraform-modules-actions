@@ -27,5 +27,6 @@ jobs:
          API_URL: https://api.getport.io/v1
          BLUEPRINT_IDENTIFIER: container-vm
        run: |
+           pwd
            pip install requests
            python .github/scripts/update-port-actions.py  
