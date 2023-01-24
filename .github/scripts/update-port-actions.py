@@ -69,6 +69,7 @@ def report_to_port(version, example, inputs, token):
         "title": f"Create {example} {MODULE_NAME}/{version}",
         "trigger": "CREATE",
         "userInputs": inputs,
+        "description": f"https://registry.terraform.io/modules/{MODULE_NAME}/{version}/examples/{example}",
         "invocationMethod": { "type": "MOCK" }
     }
 
