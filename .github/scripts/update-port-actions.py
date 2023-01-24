@@ -60,6 +60,7 @@ def report_to_port(version, example, inputs, token):
     headers = {
         'Authorization': f'Bearer {token}'
     }
+    
     params = {
         'upsert': 'true'
     }
