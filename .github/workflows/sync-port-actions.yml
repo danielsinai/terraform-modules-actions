@@ -13,6 +13,10 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
+     - uses: actions/checkout@v3
+       with:
+         persist-credentials: true
+         fetch-depth: 2
      - uses: actions/setup-python@v4
        with:
          python-version: '3.x'
@@ -27,6 +31,5 @@ jobs:
          API_URL: https://api.getport.io/v1
          BLUEPRINT_IDENTIFIER: container-vm
        run: |
-           pwd
-           pip install requests
+           pip install -r .github/scripts/requirements.txt
            python .github/scripts/update-port-actions.py  
