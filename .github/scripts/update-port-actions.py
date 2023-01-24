@@ -69,7 +69,7 @@ def report_to_port(version, example, inputs, token):
         "title": f"Create {example} {MODULE_NAME}/{version}",
         "trigger": "CREATE",
         "userInputs": inputs,
-        "description": f"https://registry.terraform.io/modules/{MODULE_NAME}/{version}/examples/{example}",
+        "description": f"More details can be find at here:  https://registry.terraform.io/modules/{MODULE_NAME}/{version}/examples/{example}",
         "invocationMethod": { "type": "MOCK" }
     }
 
@@ -91,9 +91,9 @@ def build_input(input, input_final_json_properties, input_final_json_required):
         type = 'number'
     elif input['type'] == 'bool':
         type = 'boolean'
-    elif input['type'] == 'list' or 'set' in input['type']:
+    elif 'list' in input['type'] or 'set' in input['type']:
         type = 'array'
-    elif input['type'] == 'object' or 'map' in input['type'] :
+    elif 'object' in input['type'] or 'map' in input['type'] :
         type = 'object'
 
     if input['default'] != '':
