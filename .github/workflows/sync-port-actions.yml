@@ -1,0 +1,31 @@
+name: Sync actions to Port from terraform module
+
+on:
+  workflow_call:
+    secrets: 
+      PORT_CLIENT_ID: 
+        required: true
+      PORT_CLIENT_SECRET: 
+        required: true
+      TF_CLOUD_TOKEN: 
+        required: true
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+     - uses: actions/setup-python@v4
+       with:
+         python-version: '3.x'
+     - name: Run scanner script
+       env:
+         TF_CLOUD_TOKEN: ${{ secrets.TF_CLOUD_TOKEN }}
+         CLIENT_ID: ${{ secrets.PORT_CLIENT_ID }}
+         CLIENT_SECRET: ${{ secrets.PORT_CLIENT_SECRET }}
+         MODULE_NAME: terraform-google-modules/container-vm/google
+         MODULE_VERSIONS: "3.1.0,3.0.1"
+         MODULE_EXAMPLES: "instance_with_advanced_options,instance_with_config_file"
+         API_URL: https://api.getport.io/v1
+         BLUEPRINT_IDENTIFIER: container-vm
+       run: |
+           pip install -r .github/scripts/requirements.txt
+           python .github/scripts/update-port-actions.py  
