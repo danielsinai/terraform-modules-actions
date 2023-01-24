@@ -66,7 +66,7 @@ def report_to_port(version, example, inputs, token):
 
     action_json = {
         "identifier": f"{example}-{MODULE_NAME}-{version.replace('.', '_')}".replace('-', '_').replace('/', '_'),
-        "title": f"Create {example} {MODULE_NAME}/{version}",
+        "title": f"Create {example}@{version}",
         "trigger": "CREATE",
         "userInputs": inputs,
         "description": f"More details can be find at here:  https://registry.terraform.io/modules/{MODULE_NAME}/{version}/examples/{example}",
