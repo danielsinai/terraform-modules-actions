@@ -70,7 +70,7 @@ def report_to_port(version, example, inputs, token):
         "title": f"Create {example}-{version}".replace('_', ' ').title(),
         "trigger": "CREATE",
         "userInputs": inputs,
-        "description": f"More details about this version can be found (here)[https://registry.terraform.io/modules/{MODULE_NAME}/{version}/examples/{example}]",
+        "description": f"More details about this version can be found here https://registry.terraform.io/modules/{MODULE_NAME}/{version}/examples/{example}",
         "invocationMethod": { "type": "MOCK" }
     }
 
