@@ -27,15 +27,13 @@ jobs:
      - uses: actions/setup-python@v4
        with:
          python-version: '3.x'
-     - name: echo fromJson(inputs.port_payload).properties
-       run: echo ${{ fromJson(inputs.port_payload).properties }}
-     - name: Run scanner script
+     - name: Run python script
        env:
          TF_CLOUD_TOKEN: ${{ secrets.TF_CLOUD_TOKEN }}
          TF_CLOUD_TEAM_TOKEN: ${{ secrets.TF_CLOUD_TEAM_TOKEN }}
          ORGANIATION_NAME: example-org-27d3a7
-         ACTION_IDENTIFIER:  ${{ fromJson(inputs.port_payload).action.identifier }}
-         VARIABLES: ${{ fromJson(inputs.port_payload).properties }}
+         ACTION_IDENTIFIER:  ${{ fromJson(inputs.port_payload).payload.action.identifier }}
+         VARIABLES: ${{ fromJson(inputs.port_payload).payload.properties }}
          RUN_ID: ${{ fromJson(inputs.port_payload).context.runId }}
        run: |
            pip install -r .github/scripts/requirements.txt
