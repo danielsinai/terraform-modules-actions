@@ -45,10 +45,9 @@ def get_terraform_module(version):
     return module_response.json()
     
 
-def report_to_port(version, example, inputs, token):
+def report_action_to_port(version, example, inputs, token):
     """
             Reports to Port on a new action based on provided inputs.
-            Uses threading to parallel-create the package entities in  Port.
             Args:
                     inputs: Json of the terraform inputs
                     token: PortAPI Token
@@ -61,10 +60,6 @@ def report_to_port(version, example, inputs, token):
         'Authorization': f'Bearer {token}'
     }
     
-    params = {
-        'upsert': 'true'
-    }
-
     action_json = {
         "identifier": f"{example}__{MODULE_NAME}__{version.replace('.', '_')}".replace('/', '_'),
         "title": f"Create {example}-{version}".replace('_', ' ').title(),
@@ -81,14 +76,45 @@ def report_to_port(version, example, inputs, token):
     }
 
     response = requests.post(f'{API_URL}/blueprints/{BLUEPRINT_IDENTIFIER}/actions',
-                             json=action_json, headers=headers, params=params)
+                             json=action_json, headers=headers)
     
     if response.status_code == 409:
         response = requests.put(f'{API_URL}/blueprints/{BLUEPRINT_IDENTIFIER}/actions/{action_json["identifier"]}',
-                                json=action_json, headers=headers, params=params)
+                                json=action_json, headers=headers)
     
-    print(response.status_code)
     return response.status_code
+
+def report_blueprint_to_port(schema, token):
+    """
+            Reports to Port on a new blueprint based on provided properties.
+            Args:
+                    inputs: Json of the terraform inputs
+                    token: PortAPI Token
+            Return:
+                    Status code of POST command sent to Port
+    """
+    logger.info('Fetching token')
+
+    headers = {
+        'Authorization': f'Bearer {token}'
+    }
+    
+    blueprint_json = {
+        "identifier": f"{BLUEPRINT_IDENTIFIER}",
+        "title": f"{BLUEPRINT_IDENTIFIER}".replace('-', ' ').title(),
+        "icon": "GoogleCloud",
+        "schema": schema
+    }
+
+    response = requests.post(f'{API_URL}/blueprints',
+                             json=blueprint_json, headers=headers)
+    
+    if response.status_code == 409:
+        response = requests.put(f'{API_URL}/blueprints/{BLUEPRINT_IDENTIFIER}',
+                                json=blueprint_json, headers=headers)
+    
+    return response.status_code
+
 
 def build_input(input, input_final_json_properties, input_final_json_required):
     type = ''
@@ -114,9 +140,62 @@ def build_input(input, input_final_json_properties, input_final_json_required):
             "title": input['name'].replace('_', ' ').title(),
         }
 
+def build_output(output, output_final_json_properties):
+    type = 'string'
+    format = None
+
+    if 'url' in output['name']:
+        format = 'url'
+
+    if format != None:
+        output_final_json_properties[output['name']] = {
+            "type": type,
+            "description": output['description'],
+            "title": output['name'].replace('_', ' ').title(),
+            "format": format
+        }
+    else:
+        output_final_json_properties[output['name']] = {
+            "type": type,
+            "description": output['description'],
+            "title": output['name'].replace('_', ' ').title(),
+        }
+
 def main():
     port_token = get_port_api_token()
 
+    """
+     Reporting common outputs as Port blueprint
+    """
+    properties_json_per_version = {}
+
+    for version in MODULE_VERSIONS.split(','):
+        properties_json = {}
+        terraform_module = get_terraform_module(version)
+        for output in terraform_module['root']['outputs']:
+
+            for example in terraform_module['examples']:
+                if example['name'] not in MODULE_EXAMPLES.split(','):
+                    continue
+
+                for example_output in example['outputs']:
+                    if example_output['name'] == output['name']:
+                        build_output(example_output, properties_json)
+
+        properties_json_per_version[version] = properties_json
+    
+    final_properties = {}
+
+    for version in MODULE_VERSIONS.split(','):
+        for property in properties_json_per_version[version]:
+            if property not in final_properties:
+                final_properties[property] = properties_json_per_version[version][property]
+
+    report_blueprint_to_port({ "properties": final_properties, "required": [] }, port_token)
+
+    """
+     Reporting examples as CREATE Port actions
+    """
     for version in MODULE_VERSIONS.split(','):
         terraform_module = get_terraform_module(version)
         for example in terraform_module['examples']:
@@ -129,11 +208,7 @@ def main():
             for input in example['inputs']:
                 build_input(input, input_final_json_properties, input_final_json_required)
             
-#            for input in terraform_module['root']['inputs']:
-#                if input["required"] == True:
-#                    build_input(input, input_final_json_properties, input_final_json_required)
-
-            report_to_port(version, example['name'], { "properties": input_final_json_properties, "required": list(set(input_final_json_required)) }, port_token)
+            report_action_to_port(version, example['name'], { "properties": input_final_json_properties, "required": list(set(input_final_json_required)) }, port_token)
 
 if __name__ == '__main__':
     main()
