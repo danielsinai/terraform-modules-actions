@@ -112,7 +112,7 @@ def create_terraform_workspace(run_id):
             "type": "workspaces",
             "attributes": {
                 "name": run_id,
-                "auto-apply": False,
+                "auto-apply": True,
             }
         }
     }
