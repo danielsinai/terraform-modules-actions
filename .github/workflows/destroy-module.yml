@@ -31,6 +31,7 @@ jobs:
         curl 'https://app.terraform.io/api/v2/runs' \
           -H 'content-type: application/vnd.api+json' \
           -H 'Authorization: Bearer ${{ secrets.TF_CLOUD_TOKEN }}' \
+          --request POST \
           --data-raw '{"data":{"attributes":{"comment":"plan -destroy","is-destroy":true,"refresh":true,"refresh-only":false},"relationships":{"workspace":{"data":{"type":"workspaces","id":"${{ steps.get_workspace_id.id }}"}}},"type":"runs"}}' \
           --compressed
                 
