@@ -38,13 +38,8 @@ jobs:
            python .github/scripts/deploy-tf-module.py
      - uses: kvrhdn/tfe-run@v1
        with:
-         # Token used to communicate with the Terraform Cloud API. Must be a user or
-         # team api token.
-         token: ${{ secrets.TFE_TOKEN }}
-          # Name of the organization on Terraform Cloud. Defaults to the GitHub
-         # organization name.
-         organization: kvrhdn
-          # Name of the workspace on Terraform Cloud.
+         token: ${{ secrets.TF_CLOUD_TOKEN }}
+         organization: example-org-27d3a7
          workspace: ${{ fromJson(inputs.port_payload).context.runId }}
          type: apply
          wait-for-completion: true
