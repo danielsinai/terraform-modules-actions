@@ -9,7 +9,6 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 TF_CLOUD_TOKEN = os.environ.get("TF_CLOUD_TOKEN")
-TF_CLOUD_TEAM_TOKEN = os.environ.get("TF_CLOUD_TEAM_TOKEN")
 ORGANIATION_NAME = os.environ.get("ORGANIATION_NAME")
 PORT_PAYLOAD = os.environ.get("PORT_PAYLOAD")
 
@@ -71,6 +70,7 @@ def create_hcl_file_to_upload(variables):
     hcl_file.write("variable \"PORT_CLIENT_SECRET\" {\n")
     hcl_file.write("\ttype = string\n")
     hcl_file.write("}\n")
+
     # data
     hcl_file.write(f"module \"{RUN_ID}\""+ " {\n")
     hcl_file.write(f"\tsource = \"{module_name}//examples/{example}\"\n")
@@ -84,7 +84,7 @@ def create_hcl_file_to_upload(variables):
     hcl_file.write(f"resource \"port-labs_entity\" \"{RUN_ID}\"" + " {\n")
     hcl_file.write(f"\ttitle = \"module.{RUN_ID}.service_name\"\n")
     hcl_file.write(f"\tblueprint = \"{BLUEPRINT_IDENTIFIER}\"\n")
-    for output in ['service_url', 'service_name']:
+    for output in ['service_url', 'service_name', 'revision', 'service_id', 'service_location', 'service_status']:
         hcl_file.write("\tproperties {\n")
         hcl_file.write(f"\t\tname = \"{output}\"\n")
         hcl_file.write(f"\t\tvalue = module.{RUN_ID}.{output}\n")
@@ -92,10 +92,6 @@ def create_hcl_file_to_upload(variables):
 
     hcl_file.write("}\n")
     hcl_file.close()
-
-    #os.popen(f"tar -zcvf \"content.tar.gz\" -C \"to_upload\" ." )
-
-    #return "content.tar.gz"
     
 def create_terraform_workspace(run_id):
     """
@@ -105,7 +101,6 @@ def create_terraform_workspace(run_id):
     """
 
     headers = {'Authorization' : f'Bearer {TF_CLOUD_TOKEN}', 'Content-Type': 'application/vnd.api+json'}
-    user_headers = {'Authorization' : f'Bearer {TF_CLOUD_TEAM_TOKEN}', 'Content-Type': 'application/vnd.api+json'}
 
     workspace_payload = {
         "data": {
@@ -120,24 +115,6 @@ def create_terraform_workspace(run_id):
     requests.post(
         f"https://app.terraform.io/api/v2/organizations/{ORGANIATION_NAME}/workspaces", headers=headers, json=workspace_payload)
     
-    #configuration_version_response = requests.post(
-    #    f"https://app.terraform.io/api/v2/workspaces/{workspace_response.json()['data']['id']}/configuration-versions", headers=user_headers, json={
-    #        "data": {
-    #            "type": "configuration-versions",
-    #    }})
-    
-    #if configuration_version_response.status_code > 299: 
-    #    raise Exception(f"Error creating configuration version for workspace {run_id} with status code {configuration_version_response.status_code} and response {configuration_version_response.json()}")
-
-    #os.popen(
-    #    f"curl \
-    #        --header \"Content-Type: application/octet-stream\" \
-    #        --request PUT \
-    #        --data-binary @\"{hcl_zip}\" \
-    #        {configuration_version_response.json()['data']['attributes']['upload-url']}"
-    #)    
-    
-
 def main():
     variables_list = [{"name": key, "value": value} for key, value in VARIABLES.items()]
     
