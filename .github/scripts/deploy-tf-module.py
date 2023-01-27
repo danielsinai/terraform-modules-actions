@@ -93,11 +93,11 @@ def create_hcl_file_to_upload(variables):
     hcl_file.write("}\n")
     hcl_file.close()
 
-    os.popen(f"tar -zcvf \"content.tar.gz\" -C \"to_upload\" ." )
+    #os.popen(f"tar -zcvf \"content.tar.gz\" -C \"to_upload\" ." )
 
-    return "content.tar.gz"
+    #return "content.tar.gz"
     
-def create_terraform_workspace(run_id, hcl_zip):
+def create_terraform_workspace(run_id):
     """
     Returns:
     Create a Terraform workspace in Terraform Cloud
@@ -117,32 +117,32 @@ def create_terraform_workspace(run_id, hcl_zip):
         }
     }
 
-    workspace_response = requests.post(
+    requests.post(
         f"https://app.terraform.io/api/v2/organizations/{ORGANIATION_NAME}/workspaces", headers=headers, json=workspace_payload)
     
-    configuration_version_response = requests.post(
-        f"https://app.terraform.io/api/v2/workspaces/{workspace_response.json()['data']['id']}/configuration-versions", headers=user_headers, json={
-            "data": {
-                "type": "configuration-versions",
-        }})
+    #configuration_version_response = requests.post(
+    #    f"https://app.terraform.io/api/v2/workspaces/{workspace_response.json()['data']['id']}/configuration-versions", headers=user_headers, json={
+    #        "data": {
+    #            "type": "configuration-versions",
+    #    }})
     
-    if configuration_version_response.status_code > 299: 
-        raise Exception(f"Error creating configuration version for workspace {run_id} with status code {configuration_version_response.status_code} and response {configuration_version_response.json()}")
+    #if configuration_version_response.status_code > 299: 
+    #    raise Exception(f"Error creating configuration version for workspace {run_id} with status code {configuration_version_response.status_code} and response {configuration_version_response.json()}")
 
-    os.popen(
-        f"curl \
-            --header \"Content-Type: application/octet-stream\" \
-            --request PUT \
-            --data-binary @\"{hcl_zip}\" \
-            {configuration_version_response.json()['data']['attributes']['upload-url']}"
-    )    
+    #os.popen(
+    #    f"curl \
+    #        --header \"Content-Type: application/octet-stream\" \
+    #        --request PUT \
+    #        --data-binary @\"{hcl_zip}\" \
+    #        {configuration_version_response.json()['data']['attributes']['upload-url']}"
+    #)    
     
 
 def main():
     variables_list = [{"name": key, "value": value} for key, value in VARIABLES.items()]
     
-    hcl_zip = create_hcl_file_to_upload(variables_list)
-    create_terraform_workspace(RUN_ID, hcl_zip)
+    create_hcl_file_to_upload(variables_list)
+    create_terraform_workspace(RUN_ID)
 
 if __name__ == '__main__':
     main()
