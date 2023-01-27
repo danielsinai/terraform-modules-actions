@@ -1,0 +1,29 @@
+name: Execute terraform module on TF Cloud
+
+on:
+  workflow_dispatch:
+    inputs:
+      port_payload:
+        required: true
+        description: "Port's payload, including details for who triggered the action and general context (blueprint, run id, etc...)"
+        type: string
+    secrets: 
+      PORT_CLIENT_ID: 
+        required: true
+      PORT_CLIENT_SECRET: 
+        required: true
+      TF_CLOUD_TOKEN: 
+        required: true
+      TF_CLOUD_TEAM_TOKEN: 
+        required: true
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+     - uses: kvrhdn/tfe-run@v1
+       with:
+         token: ${{ secrets.TF_CLOUD_TEAM_TOKEN }}
+         organization: example-org-27d3a7
+         workspace: ${{ fromJson(inputs.port_payload).context.entity }}
+         type: destroy
+                

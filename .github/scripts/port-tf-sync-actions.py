@@ -84,6 +84,43 @@ def report_action_to_port(version, example, inputs, token):
     
     return response.status_code
 
+def report_destroy_action_to_port(token):
+    """
+            Reports to Port on a new action based on provided inputs.
+            Args:
+                    inputs: Json of the terraform inputs
+                    token: PortAPI Token
+            Return:
+                    Status code of POST command sent to Port
+    """
+    logger.info('Fetching token')
+
+    headers = {
+        'Authorization': f'Bearer {token}'
+    }
+    
+    action_json = {
+        "identifier": f"destroy",
+        "title": f"Destroy all resources",
+        "trigger": "DELETE",
+        "userInputs": {"properties": {}},
+        "invocationMethod": {
+            "type": "GITHUB",
+            "org": "danielsinai", 
+            "repo": "terraform-modules-actions", 
+            "workflow": "destroy-module.yml"
+        }
+    }
+
+    response = requests.post(f'{API_URL}/blueprints/{BLUEPRINT_IDENTIFIER}/actions',
+                             json=action_json, headers=headers)
+    
+    if response.status_code == 409:
+        response = requests.put(f'{API_URL}/blueprints/{BLUEPRINT_IDENTIFIER}/actions/{action_json["identifier"]}',
+                                json=action_json, headers=headers)
+    
+    return response.status_code
+
 def report_blueprint_to_port(schema, token):
     """
             Reports to Port on a new blueprint based on provided properties.
@@ -209,6 +246,6 @@ def main():
                 build_input(input, input_final_json_properties, input_final_json_required)
             
             report_action_to_port(version, example['name'], { "properties": input_final_json_properties, "required": list(set(input_final_json_required)) }, port_token)
-
+    report_destroy_action_to_port(port_token)
 if __name__ == '__main__':
     main()
