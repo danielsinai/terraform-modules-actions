@@ -129,9 +129,9 @@ def main():
             for input in example['inputs']:
                 build_input(input, input_final_json_properties, input_final_json_required)
             
-            for input in terraform_module['root']['inputs']:
-                if input["required"] == True:
-                    build_input(input, input_final_json_properties, input_final_json_required)
+#            for input in terraform_module['root']['inputs']:
+#                if input["required"] == True:
+#                    build_input(input, input_final_json_properties, input_final_json_required)
 
             report_to_port(version, example['name'], { "properties": input_final_json_properties, "required": list(set(input_final_json_required)) }, port_token)
 
