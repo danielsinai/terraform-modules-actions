@@ -57,7 +57,7 @@ jobs:
        run: |
           import requests
 
-          url = "https://app.terraform.io/api/v2/runs/" + "${{ steps.destroy.outputs.id }}"
+          url = "https://app.terraform.io/api/v2/runs/" + ${{ steps.destroy.outputs.id }}
           while True:
             response = requests.get(url, headers={"headers": "Authorization: Bearer ${{ secrets.TF_CLOUD_TEAM_TOKEN }}", "Content-Type": "application/vnd.api+json"})
 
