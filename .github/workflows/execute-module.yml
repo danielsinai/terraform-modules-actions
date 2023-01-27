@@ -32,9 +32,7 @@ jobs:
          TF_CLOUD_TOKEN: ${{ secrets.TF_CLOUD_TOKEN }}
          TF_CLOUD_TEAM_TOKEN: ${{ secrets.TF_CLOUD_TEAM_TOKEN }}
          ORGANIATION_NAME: example-org-27d3a7
-         ACTION_IDENTIFIER:  ${{ fromJson(inputs.port_payload).payload.action.identifier }}
-         VARIABLES: ${{ fromJson(inputs.port_payload).payload.properties }}
-         RUN_ID: ${{ fromJson(inputs.port_payload).context.runId }}
+         PORT_PAYLOAD: ${{ github.event.inputs.port_payload }}
        run: |
            pip install -r .github/scripts/requirements.txt
            python .github/scripts/deploy-tf-module.py  

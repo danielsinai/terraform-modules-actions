@@ -12,9 +12,12 @@ logger.setLevel(logging.INFO)
 TF_CLOUD_TOKEN = os.environ.get("TF_CLOUD_TOKEN")
 TF_CLOUD_TEAM_TOKEN = os.environ.get("TF_CLOUD_TEAM_TOKEN")
 ORGANIATION_NAME = os.environ.get("ORGANIATION_NAME")
-ACTION_IDENTIFIER = os.environ.get("ACTION_IDENTIFIER")
-VARIABLES = os.environ.get("VARIABLES")
-RUN_ID = os.environ.get("RUN_ID")
+PORT_PAYLOAD = os.environ.get("PORT_PAYLOAD")
+
+ACTION_IDENTIFIER = json.loads(PORT_PAYLOAD)['payload']['action']['identifier']
+RUN_ID = json.loads(PORT_PAYLOAD)['context']['runId']
+VARIABLES = json.loads(PORT_PAYLOAD)['payload']['properties']
+
 
 def create_hcl_file_to_upload(variables):
     """
@@ -116,8 +119,7 @@ def create_terraform_workspace(run_id, terraform_inputs, hcl_zip):
     
 
 def main():
-    variables_json = json.loads(VARIABLES)
-    variables_list = [{"name": key, "value": value} for key, value in variables_json.items()]
+    variables_list = [{"name": key, "value": value} for key, value in VARIABLES.items()]
     
     hcl_zip = create_hcl_file_to_upload(variables_list)
     #create_terraform_workspace(RUN_ID, variables_list, hcl_zip)
