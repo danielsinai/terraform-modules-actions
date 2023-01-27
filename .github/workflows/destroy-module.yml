@@ -20,15 +20,16 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-     - name: Get workspace id
+     - name: get_workspace_id
        id: get_workspace_id
        run: |
          echo "::set-output name=id::$(curl 'https://app.terraform.io/api/v2/organizations/example-org-27d3a7/workspaces/${{ fromJson(inputs.port_payload).context.entity }}' -H 'content-type: application/vnd.api+json' -H 'Authorization: Bearer ${{ secrets.TF_CLOUD_TOKEN }}' | jq '.data.id')"
      - name: destroy
        run: |
+        echo "Destroying workspace ${{ steps.get_workspace_id.outputs.id }}"
         curl 'https://app.terraform.io/api/v2/runs' \
-          -H 'content-type: application/vnd.api+json' \
-          -H 'Authorization: Bearer ${{ secrets.TF_CLOUD_TOKEN }}' \
+          -H 'Content-Type: application/vnd.api+json' \
+          -H 'Authorization: Bearer ${{ secrets.TF_CLOUD_TEAM_TOKEN }}' \
           --request POST \
           --data '{
               "data": {
