@@ -26,12 +26,13 @@ def create_hcl_file_to_upload(variables):
     os.mkdir("to_upload")
 
     action_splited = ACTION_IDENTIFIER.split("__")
+    example = action_splited[0]
     module_name = action_splited[1].replace("_", "/")
     version = action_splited[2].replace("_", ".")
 
     hcl_file = open("to_upload/main.tf", "w")
     hcl_file.write(f"module \"{RUN_ID}\""+ " {\n")
-    hcl_file.write(f"\tsource = \"{module_name}//examples/simple_cloud_run\"\n")
+    hcl_file.write(f"\tsource = \"{module_name}//examples/{example}\"\n")
     hcl_file.write(f"\tversion = \"{version}\"\n")
 
     for variable in variables:
