@@ -1,4 +1,4 @@
-name: Sync actions to Port from terraform module
+name: Execute terraform module on TF Cloud
 
 on:
   workflow_dispatch:

@@ -1,4 +1,4 @@
-name: Create terraform module
+name: Sync port actions
 
 on:
   workflow_dispatch:
