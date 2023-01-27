@@ -36,6 +36,9 @@ jobs:
        run: |
            pip install -r .github/scripts/requirements.txt
            python .github/scripts/deploy-tf-module.py
+           ls -l
+     - name: ls l 
+       run: ls -l
      - uses: kvrhdn/tfe-run@v1
        with:
          token: ${{ secrets.TF_CLOUD_TEAM_TOKEN }}
@@ -43,5 +46,5 @@ jobs:
          workspace: ${{ fromJson(inputs.port_payload).context.runId }}
          type: apply
          wait-for-completion: true
-         directory: ./to-upload
+         directory: to-upload
                 
