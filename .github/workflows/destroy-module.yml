@@ -25,9 +25,10 @@ jobs:
        run: |
          echo "::set-output name=id::$(curl 'https://app.terraform.io/api/v2/organizations/example-org-27d3a7/workspaces/${{ fromJson(inputs.port_payload).context.entity }}' -H 'content-type: application/vnd.api+json' -H 'Authorization: Bearer ${{ secrets.TF_CLOUD_TOKEN }}' | jq '.data.id')"
      - name: destroy
+       id: destroy
        run: |
         echo "Destroying workspace ${{ steps.get_workspace_id.outputs.id }}"
-        curl 'https://app.terraform.io/api/v2/runs' \
+        echo "::set-output name=id::curl 'https://app.terraform.io/api/v2/runs' \
           -H 'Content-Type: application/vnd.api+json' \
           -H 'Authorization: Bearer ${{ secrets.TF_CLOUD_TEAM_TOKEN }}' \
           --request POST \
@@ -49,5 +50,17 @@ jobs:
                 },
                 "type": "runs"
               }
-            }'
+            }' | jq '.data.id')"
+     - name: Wait for completion
+       run: |
+        until [\
+          "$(curl 'https://app.terraform.io/api/v2/organizations/example-org-27d3a7/workspaces/${{ fromJson(inputs.port_payload).context.entity }}' -H 'content-type: application/vnd.api+json' -H 'Authorization: Bearer ${{ secrets.TF_CLOUD_TOKEN }}' | jq '.data.attributes.status')" \
+           -eq "applied" || -eq "errored" || -eq "discarded" || -eq "canceled" || -eq "force_canceled" \
+        ]
+        do
+          echo "Waiting for completion"
+          sleep 5
+        done
+         
+
                 
