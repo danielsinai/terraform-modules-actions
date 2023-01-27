@@ -20,10 +20,17 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-     - uses: kvrhdn/tfe-run@v1
-       with:
-         token: ${{ secrets.TF_CLOUD_TEAM_TOKEN }}
-         organization: example-org-27d3a7
-         workspace: ${{ fromJson(inputs.port_payload).context.entity }}
-         type: destroy
+     - name: Get workspace id
+       id: get_workspace_id
+       run: |
+         echo "::setoutput name=id::$(curl 'https://app.terraform.io/api/v2/organizations/example-org-27d3a7/workspace/${{ fromJson(inputs.port_payload).context.runId }}' \
+          -H 'content-type: application/vnd.api+json' \
+          -H 'Authorization: Bearer ${{ secrets.TF_CLOUD_TOKEN }}' | jq -r '.data.id')
+     - name: destroy
+       run: |
+        curl 'https://app.terraform.io/api/v2/runs' \
+          -H 'content-type: application/vnd.api+json' \
+          -H 'Authorization: Bearer ${{ secrets.TF_CLOUD_TOKEN }}' \
+          --data-raw '{"data":{"attributes":{"comment":"plan -destroy","is-destroy":true,"refresh":true,"refresh-only":false},"relationships":{"workspace":{"data":{"type":"workspaces","id":"${{ steps.get_workspace_id.id }}"}}},"type":"runs"}}' \
+          --compressed
                 
