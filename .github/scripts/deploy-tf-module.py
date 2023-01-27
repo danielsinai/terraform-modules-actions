@@ -4,7 +4,6 @@ import json
 import os
 import logging
 import requests
-import tarfile
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -26,27 +25,24 @@ def create_hcl_file_to_upload(variables):
     """
     os.mkdir("to_upload")
 
-    action_splited = ACTION_IDENTIFIER.split("--")
-    example = action_splited[0]
-    module_name = action_splited[1]
+    action_splited = ACTION_IDENTIFIER.split("__")
+    module_name = action_splited[1].replace("_", "/")
     version = action_splited[2].replace("_", ".")
 
     hcl_file = open("to_upload/main.tf", "w")
     hcl_file.write(f"module \"{RUN_ID}\""+ " {\n")
-    hcl_file.write(f"\tsource = \"{module_name}//examples/{example}\"\n")
+    hcl_file.write(f"\tsource = \"{module_name}\"\n")
     hcl_file.write(f"\tversion = \"{version}\"\n")
 
-    #for variable in variables:
-    #    hcl_file.write(f"\t{variable['name']} = \"{variable['value']}\"\n")
+    for variable in variables:
+        hcl_file.write(f"\t{variable['name']} = \"{variable['value']}\"\n")
 
     hcl_file.write("}\n")
     hcl_file.close()
 
-    tar = tarfile.open("to_upload.tar.gz", "w:gz")
-    tar.add('to_upload/main.tf')
-    tar.close()
+    os.popen(f"tar -zcvf \"content.tar.gz\" -C \"to_upload\" ." )
 
-    return "to_upload.tar.gz"
+    return "content.tar.gz"
     
 def create_terraform_workspace(run_id, terraform_inputs, hcl_zip):
     """
@@ -71,31 +67,6 @@ def create_terraform_workspace(run_id, terraform_inputs, hcl_zip):
     workspace_response = requests.post(
         f"https://app.terraform.io/api/v2/organizations/{ORGANIATION_NAME}/workspaces", headers=headers, json=workspace_payload)
     
-    if workspace_response.status_code < 299:
-        for input in terraform_inputs:
-            attributes = {
-                "key": input['name'],
-                "value": input['value'],
-                "decsription": "",
-                "sensitive": False,
-                "hcl": False,
-                "category": "terraform"
-            }
-
-            variables_data = {
-                "data": {
-                    "type": "vars",
-                    "attributes": attributes
-                }
-            }
-
-            variables_response = requests.post(
-                f"https://app.terraform.io/api/v2/workspaces/{workspace_response.json()['data']['id']}/vars", headers=user_headers, json=variables_data)
-            
-            if variables_response.status_code > 299:
-                raise Exception(f"Error creating variables for workspace {run_id} with status code {variables_response.status_code} and response {variables_response.json()}")                
-    
-
     configuration_version_response = requests.post(
         f"https://app.terraform.io/api/v2/workspaces/{workspace_response.json()['data']['id']}/configuration-versions", headers=user_headers, json={
             "data": {
@@ -105,17 +76,13 @@ def create_terraform_workspace(run_id, terraform_inputs, hcl_zip):
     if configuration_version_response.status_code > 299: 
         raise Exception(f"Error creating configuration version for workspace {run_id} with status code {configuration_version_response.status_code} and response {configuration_version_response.json()}")
 
-    files = {'file': open(hcl_zip, 'rb')}
-
-    upload_response = requests.put(
-        configuration_version_response.json()['data']['attributes']['upload-url'], headers=headers,files=files
+    os.popen(
+        f"curl \
+            --header \"Content-Type: application/octet-stream\" \
+            --request PUT \
+            --data-binary @\"{hcl_zip}\" \
+            {configuration_version_response.json()['data']['attributes']['upload-url']}"
     )    
-
-    if upload_response.status_code > 299:
-        raise Exception(f"Error uploading configuration version for workspace {run_id} with status code {upload_response.status_code} and response {upload_response.json()}")
-    
-    return workspace_response.json()        
-    
     
 
 def main():

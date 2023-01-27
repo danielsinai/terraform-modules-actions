@@ -66,7 +66,7 @@ def report_to_port(version, example, inputs, token):
     }
 
     action_json = {
-        "identifier": f"{example}--{MODULE_NAME}--{version.replace('.', '_')}".replace('/', '_'),
+        "identifier": f"{example}__{MODULE_NAME}__{version.replace('.', '_')}".replace('/', '_'),
         "title": f"Create {example}-{version}".replace('_', ' ').title(),
         "trigger": "CREATE",
         "userInputs": inputs,
@@ -86,7 +86,8 @@ def report_to_port(version, example, inputs, token):
     if response.status_code == 409:
         response = requests.put(f'{API_URL}/blueprints/{BLUEPRINT_IDENTIFIER}/actions/{action_json["identifier"]}',
                                 json=action_json, headers=headers, params=params)
-        
+    
+    print(response.status_code)
     return response.status_code
 
 def build_input(input, input_final_json_properties, input_final_json_required):
@@ -127,8 +128,12 @@ def main():
 
             for input in example['inputs']:
                 build_input(input, input_final_json_properties, input_final_json_required)
+            
+            for input in terraform_module['root']['inputs']:
+                if input["required"] == True:
+                    build_input(input, input_final_json_properties, input_final_json_required)
 
-            report_to_port(version, example['name'], { "properties": input_final_json_properties, "required": input_final_json_required }, port_token)
+            report_to_port(version, example['name'], { "properties": input_final_json_properties, "required": list(set(input_final_json_required)) }, port_token)
 
 if __name__ == '__main__':
     main()
