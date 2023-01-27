@@ -122,7 +122,7 @@ def main():
     variables_list = [{"name": key, "value": value} for key, value in VARIABLES.items()]
     
     hcl_zip = create_hcl_file_to_upload(variables_list)
-    #create_terraform_workspace(RUN_ID, variables_list, hcl_zip)
+    create_terraform_workspace(RUN_ID, variables_list, hcl_zip)
 
 if __name__ == '__main__':
     main()
