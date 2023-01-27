@@ -84,7 +84,7 @@ def create_hcl_file_to_upload(variables):
     hcl_file.write(f"\ttitle = module.{RUN_ID}.service_name\n")
     hcl_file.write(f"\tidentifier = \"{RUN_ID}\"\n")
     hcl_file.write(f"\tblueprint = \"{BLUEPRINT_IDENTIFIER}\"\n")
-    for output in ['service_url', 'service_name', 'revision', 'service_id', 'service_location', 'service_status']:
+    for output in ['service_url', 'service_name', 'revision', 'service_id', 'service_status']:
         hcl_file.write("\tproperties {\n")
         hcl_file.write(f"\t\tname = \"{output}\"\n")
         hcl_file.write(f"\t\tvalue = module.{RUN_ID}.{output}\n")
