@@ -30,5 +30,23 @@ jobs:
           -H 'content-type: application/vnd.api+json' \
           -H 'Authorization: Bearer ${{ secrets.TF_CLOUD_TOKEN }}' \
           --request POST \
-          --data '{"data":{"attributes":{"comment":"plan -destroy","is-destroy":true,"refresh":true,"refresh-only":false},"relationships":{"workspace":{"data":{"type":"workspaces","id":"${{ steps.get_workspace_id.outputs.id }}"}}},"type":"runs"}}' \
+          --data '{
+              "data": {
+                "attributes": {
+                  "comment": "plan -destroy",
+                  "is-destroy": true,
+                  "refresh": true,
+                  "refresh-only": false
+                },
+                "relationships": {
+                  "workspace": {
+                    "data": {
+                      "type": "workspaces",
+                      "id": "${{ steps.get_workspace_id.outputs.id }}"
+                    }
+                  }
+                },
+                "type": "runs"
+              }
+            }'
                 
