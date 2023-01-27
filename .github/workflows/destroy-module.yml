@@ -43,7 +43,7 @@ jobs:
                   "workspace": {
                     "data": {
                       "type": "workspaces",
-                      "id": "${{ steps.get_workspace_id.outputs.id }}"
+                      "id": ${{ steps.get_workspace_id.outputs.id }}
                     }
                   }
                 },
