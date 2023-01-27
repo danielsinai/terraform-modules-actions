@@ -25,7 +25,7 @@ jobs:
        run: |
          echo "::setoutput name=id::$(curl 'https://app.terraform.io/api/v2/organizations/example-org-27d3a7/workspace/${{ fromJson(inputs.port_payload).context.runId }}' \
           -H 'content-type: application/vnd.api+json' \
-          -H 'Authorization: Bearer ${{ secrets.TF_CLOUD_TOKEN }}' | jq -r '.data.id')"
+          -H 'Authorization: Bearer ${{ secrets.TF_CLOUD_TOKEN }}' | jq '.data.id')"
      - name: destroy
        run: |
         curl 'https://app.terraform.io/api/v2/runs' \
