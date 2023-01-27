@@ -2,9 +2,9 @@
 
 import json
 import os
-import shutil
 import logging
 import requests
+import tarfile
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -39,9 +39,11 @@ def create_hcl_file_to_upload(variables):
     hcl_file.write("}\n")
     hcl_file.close()
 
-    shutil.make_archive('to_upload', 'zip', 'to_upload')
+    tar = tarfile.open("to_upload.tar.gz", "w:gz")
+    tar.add('to_upload/main.tf')
+    tar.close()
 
-    return "to_upload.zip"
+    return "to_upload.tar.gz"
     
 def create_terraform_workspace(run_id, terraform_inputs, hcl_zip):
     """
@@ -118,7 +120,7 @@ def main():
     variables_list = [{"name": key, "value": value} for key, value in variables_json.items()]
     
     hcl_zip = create_hcl_file_to_upload(variables_list)
-    create_terraform_workspace(RUN_ID, variables_list, hcl_zip)
+    #create_terraform_workspace(RUN_ID, variables_list, hcl_zip)
 
 if __name__ == '__main__':
     main()
