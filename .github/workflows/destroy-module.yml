@@ -28,7 +28,7 @@ jobs:
        id: destroy
        run: |
         echo "Destroying workspace ${{ steps.get_workspace_id.outputs.id }}"
-        echo "::set-output name=id::curl 'https://app.terraform.io/api/v2/runs' \
+        echo "::set-output name=id::$(curl 'https://app.terraform.io/api/v2/runs' \
           -H 'Content-Type: application/vnd.api+json' \
           -H 'Authorization: Bearer ${{ secrets.TF_CLOUD_TEAM_TOKEN }}' \
           --request POST \
@@ -51,16 +51,23 @@ jobs:
                 "type": "runs"
               }
             }' | jq '.data.id')"
-     - name: Wait for completion
+
+     - name: wait for completion
+       shell: python
        run: |
-        until [\
-          "$(curl 'https://app.terraform.io/api/v2/organizations/example-org-27d3a7/workspaces/${{ fromJson(inputs.port_payload).context.entity }}' -H 'content-type: application/vnd.api+json' -H 'Authorization: Bearer ${{ secrets.TF_CLOUD_TOKEN }}' | jq '.data.attributes.status')" \
-           =~ ^(applied|errored|discarded|canceled|force_canceled) \
-        ]
-        do
-          echo "Waiting for completion"
-          sleep 5
-        done
-         
+          import requests
+
+          url = "https://app.terraform.io/api/v2/runs/" + "${{ steps.destroy.outputs.id }}"
+          while True:
+            response = requests.get(url, headers={"headers": "Authorization: Bearer ${{ secrets.TF_CLOUD_TEAM_TOKEN }}", "Content-Type": "application/vnd.api+json"})
+
+            if response.json()["data"]["attributes"]["status"] == "applied" or response.json()["data"]["attributes"]["status"] == "errored" or response.json()["data"]["attributes"]["status"] == "canceled" or response.json()["data"]["attributes"]["status"] == "planned_and_finished":
+              print("Run completed")
+              break
+            else:
+              print("Run not completed yet, waiting 10 seconds")
+              time.sleep(10)
+
+           
 
                 
