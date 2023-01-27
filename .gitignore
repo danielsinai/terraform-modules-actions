@@ -1,1 +1,4 @@
 .vscode/
+to_upload/
+*.tf
+to_upload.zip

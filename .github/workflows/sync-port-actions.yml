@@ -1,7 +1,11 @@
-name: Sync actions to Port from terraform module
+name: Create terraform module
 
 on:
   workflow_dispatch:
+    inputs:
+      PORT_PAYLOAD:
+        description: 'Port.io payload'
+        required: true
     secrets: 
       PORT_CLIENT_ID: 
         required: true
@@ -23,13 +27,11 @@ jobs:
      - name: Run scanner script
        env:
          TF_CLOUD_TOKEN: ${{ secrets.TF_CLOUD_TOKEN }}
-         PORT_CLIENT_ID: ${{ secrets.PORT_CLIENT_ID }}
-         PORT_CLIENT_SECRET: ${{ secrets.PORT_CLIENT_SECRET }}
-         MODULE_NAME: GoogleCloudPlatform/cloud-run/google
-         MODULE_VERSIONS: "0.4.0,0.3.0"
-         MODULE_EXAMPLES: "secure_cloud_run_standalone,secure_cloud_run,simple_cloud_run"
-         API_URL: https://api.getport.io/v1
-         BLUEPRINT_IDENTIFIER: cloud-run
+         TF_CLOUD_TEAM_TOKEN: ${{ secrets.TF_CLOUD_TEAM_TOKEN }}
+         ORGANIATION_NAME: example-org-27d3a7
+         ACTION_IDENTIFIER:  ${{ fromJson(inputs.port_payload).action.identifier }}
+         VARIABLES: ${{ fromJson(inputs.port_payload).properties }}
+         RUN_ID: ${{ fromJson(inputs.port_payload).context.runId }}
        run: |
            pip install -r .github/scripts/requirements.txt
-           python .github/scripts/update-port-actions.py  
+           python .github/scripts/port-tf-sync-actions.py  

@@ -1,0 +1,42 @@
+name: Sync actions to Port from terraform module
+
+on:
+  workflow_dispatch:
+    inputs:
+      port_payload:
+        required: true
+        description: "Port's payload, including details for who triggered the action and general context (blueprint, run id, etc...)"
+        type: string
+    secrets: 
+      PORT_CLIENT_ID: 
+        required: true
+      PORT_CLIENT_SECRET: 
+        required: true
+      TF_CLOUD_TOKEN: 
+        required: true
+      TF_CLOUD_TEAM_TOKEN: 
+        required: true
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+     - uses: actions/checkout@v3
+       with:
+         persist-credentials: true
+         fetch-depth: 2
+     - uses: actions/setup-python@v4
+       with:
+         python-version: '3.x'
+     - name: Run scanner script
+       env:
+         TF_CLOUD_TOKEN: ${{ secrets.TF_CLOUD_TOKEN }}
+         PORT_CLIENT_ID: ${{ secrets.PORT_CLIENT_ID }}
+         PORT_CLIENT_SECRET: ${{ secrets.PORT_CLIENT_SECRET }}
+         MODULE_NAME: GoogleCloudPlatform/cloud-run/google
+         MODULE_VERSIONS: "0.4.0,0.3.0"
+         MODULE_EXAMPLES: "secure_cloud_run_standalone,secure_cloud_run,simple_cloud_run"
+         API_URL: https://api.getport.io/v1
+         BLUEPRINT_IDENTIFIER: cloud-run
+       run: |
+           pip install -r .github/scripts/requirements.txt
+           python .github/scripts/update-port-actions.py  

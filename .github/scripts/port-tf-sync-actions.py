@@ -66,12 +66,18 @@ def report_to_port(version, example, inputs, token):
     }
 
     action_json = {
-        "identifier": f"{example}-{MODULE_NAME}-{version.replace('.', '_')}".replace('-', '_').replace('/', '_'),
+        "identifier": f"{example}--{MODULE_NAME}--{version.replace('.', '_')}".replace('/', '_'),
         "title": f"Create {example}-{version}".replace('_', ' ').title(),
         "trigger": "CREATE",
         "userInputs": inputs,
         "description": f"More details about this version can be found here https://registry.terraform.io/modules/{MODULE_NAME}/{version}/examples/{example}",
-        "invocationMethod": { "type": "MOCK" }
+        "invocationMethod": {
+            "type": "GITHUB",
+            "org": "danielsinai", 
+            "repo": "terraform-modules-actions", 
+            "workflow": "execute-module.yml",
+            "omitUserInputs": True    
+        }
     }
 
     response = requests.post(f'{API_URL}/blueprints/{BLUEPRINT_IDENTIFIER}/actions',
