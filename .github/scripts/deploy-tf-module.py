@@ -37,7 +37,7 @@ def create_hcl_file_to_upload(variables):
     hcl_file.write(f"\t\t\tsource = \"hashicorp/google\"\n")
     hcl_file.write(f"\t\t\tversion = \"4.50.0\"\n")
     hcl_file.write("\t\t}\n")
-    hcl_file.write("\tgoogle-beta = {\n")
+    hcl_file.write("\t\tgoogle-beta = {\n")
     hcl_file.write(f"\t\t\tsource = \"hashicorp/google-beta\"\n")
     hcl_file.write(f"\t\t\tversion = \"4.50.0\"\n")
     hcl_file.write("\t\t}\n")
