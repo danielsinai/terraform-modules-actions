@@ -1,4 +1,4 @@
-name: Execute terraform module on TF Cloud
+name: Execute destroy terraform workspace on TF Cloud
 
 on:
   workflow_dispatch:
