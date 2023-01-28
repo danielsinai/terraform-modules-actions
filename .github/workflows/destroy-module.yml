@@ -56,11 +56,12 @@ jobs:
        shell: python
        run: |
           import requests
-
+          import time
+          
           url = "https://app.terraform.io/api/v2/runs/" + ${{ steps.destroy.outputs.id }}
           while True:
-            response = requests.get(url, headers={"headers": "Authorization: Bearer ${{ secrets.TF_CLOUD_TEAM_TOKEN }}", "Content-Type": "application/vnd.api+json"})
-
+            response = requests.get(url, headers={"Authorization": Bearer ${{ secrets.TF_CLOUD_TEAM_TOKEN }}", "Content-Type": "application/vnd.api+json"})
+          
             if response.json()["data"]["attributes"]["status"] == "applied" or response.json()["data"]["attributes"]["status"] == "errored" or response.json()["data"]["attributes"]["status"] == "canceled" or response.json()["data"]["attributes"]["status"] == "planned_and_finished":
               print("Run completed")
               break
