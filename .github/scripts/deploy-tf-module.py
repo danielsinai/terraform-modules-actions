@@ -92,7 +92,7 @@ def create_hcl_file_to_upload(variables):
         hcl_file.write("\t}\n")
 
     hcl_file.write("\tproperties {\n")
-    hcl_file.write(f"\t\tcreator = \"creator\"\n")
+    hcl_file.write(f"\t\tname = \"creator\"\n")
     hcl_file.write(f"\t\tvalue = \"{USER_EMAIL}\"\n")
     hcl_file.write("\t}\n")
 
