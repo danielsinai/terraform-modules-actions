@@ -136,7 +136,7 @@ def report_blueprint_to_port(schema, token):
         'Authorization': f'Bearer {token}'
     }
 
-    schema.properties.update({"creator": {"type": "string", "title": "Creator", "format": "user"}})
+    schema["properties"]["creator"]= {"type": "string", "title": "Creator", "format": "user"}
     
     blueprint_json = {
         "identifier": f"{BLUEPRINT_IDENTIFIER}",
