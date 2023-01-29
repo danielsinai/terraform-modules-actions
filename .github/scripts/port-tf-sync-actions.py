@@ -135,8 +135,6 @@ def report_blueprint_to_port(schema, token):
     headers = {
         'Authorization': f'Bearer {token}'
     }
-
-    schema["properties"]["creator"]= {"type": "string", "title": "Creator", "format": "user"}
     
     blueprint_json = {
         "identifier": f"{BLUEPRINT_IDENTIFIER}",
@@ -223,7 +221,7 @@ def main():
 
         properties_json_per_version[version] = properties_json
     
-    final_properties = {}
+    final_properties = {"creator": {"type": "string", "title": "Creator", "format": "user"}}
 
     for version in MODULE_VERSIONS.split(','):
         for property in properties_json_per_version[version]:
