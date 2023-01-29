@@ -16,6 +16,7 @@ ACTION_IDENTIFIER = json.loads(PORT_PAYLOAD)['payload']['action']['identifier']
 RUN_ID = json.loads(PORT_PAYLOAD)['context']['runId']
 VARIABLES = json.loads(PORT_PAYLOAD)['payload']['properties']
 BLUEPRINT_IDENTIFIER = json.loads(PORT_PAYLOAD)['context']['blueprint']
+USER_EMAIL = json.loads(PORT_PAYLOAD)['trigger']['by']['user']['email']
 
 def create_hcl_file_to_upload(variables):
     """
@@ -89,6 +90,11 @@ def create_hcl_file_to_upload(variables):
         hcl_file.write(f"\t\tname = \"{output}\"\n")
         hcl_file.write(f"\t\tvalue = module.{RUN_ID}.{output}\n")
         hcl_file.write("\t}\n")
+
+    hcl_file.write("\tproperties {\n")
+    hcl_file.write(f"\t\tcreator = \"creator\"\n")
+    hcl_file.write(f"\t\tvalue = \"{USER_EMAIL}\"\n")
+    hcl_file.write("\t}\n")
 
     hcl_file.write("}\n")
     hcl_file.close()
