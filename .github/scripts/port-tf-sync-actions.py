@@ -249,7 +249,7 @@ def main():
         for version in module_to_export["versions"]:
             terraform_module = get_terraform_module(module_to_export['module'], version)
             for example in terraform_module['examples']:
-                if example['name'] not in module_to_export["example"]:
+                if example['name'] not in module_to_export["examples"]:
                     continue
                 
                 input_final_json_properties = {}
