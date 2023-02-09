@@ -164,7 +164,7 @@ def report_blueprints_to_port(token):
                 "type": "string",
                 "format": "url",
                 "title": "Deploy",
-                "calculation": "https://app.getport.io/self-serve?action= + '.identifier'"
+                "calculation": "'https://app.getport.io/self-serve?action=' + .identifier"
             }
         }
     }
