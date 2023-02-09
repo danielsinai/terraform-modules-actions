@@ -85,6 +85,7 @@ def report_action_to_port(module, version, example, inputs, token):
     response = requests.post(f'{API_URL}/blueprints/{MODULE_VERSION_BLUEPRINT_IDENTIFIER}/entities?upsert=true',
                               json={
                                 "identifier": action_json["identifier"],
+                                "title": action_json["title"],
                                 "properties": {
                                     "module": module, "version": version, "example": example
                                 }
@@ -162,6 +163,7 @@ def report_blueprints_to_port(token):
             "deploy": {
                 "type": "string",
                 "format": "url",
+                "title": "Deploy",
                 "calculation": "https://app.getport.io/self-serve?action= + '.identifier'"
             }
         }
@@ -169,10 +171,13 @@ def report_blueprints_to_port(token):
 
     response = requests.post(f"{API_URL}/blueprints", json=module_version_blueprint_json, headers=headers)
     
+    if response.status_code == 409:
+        response = requests.put(f"{API_URL}/blueprints/{MODULE_VERSION_BLUEPRINT_IDENTIFIER}", json=module_version_blueprint_json, headers=headers)
+
     deployment_blueprint_json = {
         "identifier": f"{DEPLOYMENT_BLUEPRINT_IDENTIFIER}",
         "title": f"{DEPLOYMENT_BLUEPRINT_IDENTIFIER}".replace('-', ' ').title(),
-        "icon": "GoogleCloud",
+        "icon": "Deployment",
         "schema": {
             "properties": {
                 "creator": {
@@ -196,8 +201,11 @@ def report_blueprints_to_port(token):
         }
     }
 
-    response = requests.post(f'{API_URL}/blueprints',
-                             json=deployment_blueprint_json, headers=headers)
+    response = requests.post(f'{API_URL}/blueprints',json=deployment_blueprint_json, headers=headers)
+
+    if response.status_code == 409:
+        response = requests.put(f'{API_URL}/blueprints/{DEPLOYMENT_BLUEPRINT_IDENTIFIER}',json=deployment_blueprint_json, headers=headers)
+
     return response.status_code
 
 
