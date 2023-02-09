@@ -88,7 +88,7 @@ def create_hcl_file_to_upload(variables):
 
     hcl_file.write("\tproperties {\n")
     hcl_file.write(f"\t\tname = \"configuration\"\n")
-    hcl_file.write(f"\t\tvalue = module.{RUN_ID}\n")
+    hcl_file.write(f"\t\tvalue = jsonencode(module.{RUN_ID})\n")
     hcl_file.write("\t}\n")
 
     hcl_file.write("\tproperties {\n")
