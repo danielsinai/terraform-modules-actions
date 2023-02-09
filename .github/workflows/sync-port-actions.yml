@@ -25,11 +25,8 @@ jobs:
          TF_CLOUD_TOKEN: ${{ secrets.TF_CLOUD_TOKEN }}
          PORT_CLIENT_ID: ${{ secrets.PORT_CLIENT_ID }}
          PORT_CLIENT_SECRET: ${{ secrets.PORT_CLIENT_SECRET }}
-         MODULE_NAME: GoogleCloudPlatform/cloud-run/google
-         MODULE_VERSIONS: "0.4.0,0.3.0"
-         MODULE_EXAMPLES: "secure_cloud_run_standalone,secure_cloud_run,simple_cloud_run"
+         MODULES_TO_EXPORT: "[{\"module\": \"GoogleCloudPlatform/cloud-run/google\", \"versions\": [\"0.4.0\", \"0.3.0\"], \"examples\": [\"secure_cloud_run_standalone\", \"secure_cloud_run\", \"simple_cloud_run\"]}]"
          API_URL: https://api.getport.io/v1
-         BLUEPRINT_IDENTIFIER: cloud-run
        run: |
            pip install -r .github/scripts/requirements.txt
            python .github/scripts/port-tf-sync-actions.py  
