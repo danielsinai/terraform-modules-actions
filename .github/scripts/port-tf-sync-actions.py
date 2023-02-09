@@ -185,9 +185,6 @@ def report_blueprints_to_port(token):
                 },
                 "configuration": {
                     "type": "object", "title": "Configuration"
-                }, 
-                "ttl": {
-                    "type": "string", "title": "TTL", "format": "timer"
                 }
             },
             "required": []
