@@ -82,7 +82,13 @@ def report_action_to_port(module, version, example, inputs, token):
     if response.status_code == 409:
         response = requests.put(f'{API_URL}/blueprints/{DEPLOYMENT_BLUEPRINT_IDENTIFIER}/actions/{action_json["identifier"]}',json=action_json, headers=headers)
     
-    response = requests.post(f'{API_URL}/blueprints/{MODULE_VERSION_BLUEPRINT_IDENTIFIER}/entities?upsert=true', json={"identifier": action_json["identifier"], "module": module, "version": version, "example": example}, headers=headers)
+    response = requests.post(f'{API_URL}/blueprints/{MODULE_VERSION_BLUEPRINT_IDENTIFIER}/entities?upsert=true',
+                              json={
+                                "identifier": action_json["identifier"],
+                                "properties": {
+                                    "module": module, "version": version, "example": example
+                                }
+                                }, headers=headers)
 
 def report_destroy_action_to_port(token):
     """
@@ -185,7 +191,7 @@ def report_blueprints_to_port(token):
             "module": {
                 "target": f"{MODULE_VERSION_BLUEPRINT_IDENTIFIER}",
                 "title": "Module",
-                "required": "true"
+                "required": True
             }
         }
     }
