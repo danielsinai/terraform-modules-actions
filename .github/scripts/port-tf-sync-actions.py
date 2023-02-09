@@ -14,7 +14,7 @@ API_URL = os.environ.get("API_URL")
 TF_CLOUD_TOKEN = os.environ.get("TF_CLOUD_TOKEN")
 MODULES_TO_EXPORT = os.environ.get("MODULES_TO_EXPORT")
 DEPLOYMENT_BLUEPRINT_IDENTIFIER = "Deployment"
-MODULE_VERSION_BLUEPRINT_IDENTIFIER = "ModuleCatalog"
+MODULE_VERSION_BLUEPRINT_IDENTIFIER = "Module-Catalog"
 
 MODULES_TO_EXPORT_JSON = json.loads(MODULES_TO_EXPORT)
 
@@ -82,8 +82,7 @@ def report_action_to_port(module, version, example, inputs, token):
     if response.status_code == 409:
         response = requests.put(f'{API_URL}/blueprints/{DEPLOYMENT_BLUEPRINT_IDENTIFIER}/actions/{action_json["identifier"]}',json=action_json, headers=headers)
     
-    # report it as entity of the blueprint
-    response = requests.post(f'{API_URL}/blueprints/{DEPLOYMENT_BLUEPRINT_IDENTIFIER}/entities?upsert=true', json={"identifier": action_json["identifier"], "module": module, "version": version, "example": example}, headers=headers)
+    response = requests.post(f'{API_URL}/blueprints/{MODULE_VERSION_BLUEPRINT_IDENTIFIER}/entities?upsert=true', json={"identifier": action_json["identifier"], "module": module, "version": version, "example": example}, headers=headers)
 
 def report_destroy_action_to_port(token):
     """
@@ -135,40 +134,10 @@ def report_blueprints_to_port(token):
         'Authorization': f'Bearer {token}'
     }
     
-    deployment_blueprint_json = {
-        "identifier": f"{DEPLOYMENT_BLUEPRINT_IDENTIFIER}",
-        "title": f"{DEPLOYMENT_BLUEPRINT_IDENTIFIER}".replace('-', ' ').title(),
-        "icon": "GoogleCloud",
-        "schema": {
-                "properties": {
-                    "creator": {
-                        "type": "string", "title": "Creator", "format": "user"
-                    },
-                    "configuration": {
-                        "type": "object", "title": "Configuration"
-                    }, 
-                    "ttl": {
-                        "type": "string", "title": "TTL", "format": "timer"
-                    }
-                },
-                "required": []
-        },
-        "relations": {
-            "module": {
-                "target": f"{MODULE_VERSION_BLUEPRINT_IDENTIFIER}",
-                "title": "Module",
-                "required": "true"
-            }
-        }
-    }
-
-    response = requests.post(f'{API_URL}/blueprints',
-                             json=deployment_blueprint_json, headers=headers)
-    
     module_version_blueprint_json = {
         "identifier": f"{MODULE_VERSION_BLUEPRINT_IDENTIFIER}",
         "title": f"{MODULE_VERSION_BLUEPRINT_IDENTIFIER}".replace('-', ' ').title(),
-        "icon": "GoogleCloud",
+        "icon": "Terraform",
         "schema": {
             "properties": {
                 "version": {
@@ -193,6 +162,36 @@ def report_blueprints_to_port(token):
     }
 
     response = requests.post(f"{API_URL}/blueprints", json=module_version_blueprint_json, headers=headers)
+    
+    deployment_blueprint_json = {
+        "identifier": f"{DEPLOYMENT_BLUEPRINT_IDENTIFIER}",
+        "title": f"{DEPLOYMENT_BLUEPRINT_IDENTIFIER}".replace('-', ' ').title(),
+        "icon": "GoogleCloud",
+        "schema": {
+            "properties": {
+                "creator": {
+                    "type": "string", "title": "Creator", "format": "user"
+                },
+                "configuration": {
+                    "type": "object", "title": "Configuration"
+                }, 
+                "ttl": {
+                    "type": "string", "title": "TTL", "format": "timer"
+                }
+            },
+            "required": []
+        },
+        "relations": {
+            "module": {
+                "target": f"{MODULE_VERSION_BLUEPRINT_IDENTIFIER}",
+                "title": "Module",
+                "required": "true"
+            }
+        }
+    }
+
+    response = requests.post(f'{API_URL}/blueprints',
+                             json=deployment_blueprint_json, headers=headers)
     return response.status_code
 
 
