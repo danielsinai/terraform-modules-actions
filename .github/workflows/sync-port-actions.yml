@@ -25,7 +25,10 @@ jobs:
          TF_CLOUD_TOKEN: ${{ secrets.TF_CLOUD_TOKEN }}
          PORT_CLIENT_ID: ${{ secrets.PORT_CLIENT_ID }}
          PORT_CLIENT_SECRET: ${{ secrets.PORT_CLIENT_SECRET }}
-         MODULES_TO_EXPORT: "[{\"module\": \"GoogleCloudPlatform/cloud-run/google\", \"versions\": [\"0.4.0\", \"0.3.0\"], \"examples\": [\"secure_cloud_run_standalone\", \"secure_cloud_run\", \"simple_cloud_run\"]}]"
+         MODULES_TO_EXPORT: "[
+             {\"module\": \"GoogleCloudPlatform/cloud-run/google\", \"versions\": [\"0.4.0\", \"0.3.0\"], \"examples\": [\"secure_cloud_run_standalone\", \"secure_cloud_run\", \"simple_cloud_run\"]}
+             {\"module\": \"weka/weka/gcp\", \"versions\": [\"2.0.0\", \"1.0.11\"], \"examples\": [\"public_vpc\", \"private_vpc_shared_vpc\", \"public_vpc_with_shared_peering\"]}
+          ]"
          API_URL: https://api.getport.io/v1
        run: |
            pip install -r .github/scripts/requirements.txt
