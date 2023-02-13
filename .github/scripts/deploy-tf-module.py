@@ -18,6 +18,7 @@ VARIABLES = json.loads(PORT_PAYLOAD)['payload']['properties']
 BLUEPRINT_IDENTIFIER = json.loads(PORT_PAYLOAD)['context']['blueprint']
 USER_EMAIL = json.loads(PORT_PAYLOAD)['trigger']['by']['user']['email']
 
+
 def create_hcl_file_to_upload(variables):
     """
     Returns:
@@ -44,9 +45,9 @@ def create_hcl_file_to_upload(variables):
     hcl_file.write("\t\t}\n")
     hcl_file.write("\t\tport-labs = {\n")
     hcl_file.write(f"\t\t\tsource = \"port-labs/port-labs\"\n")
-    hcl_file.write(f"\t\t\tversion = \"0.6.0\"\n")
+    hcl_file.write(f"\t\t\tversion = \"0.8.1\"\n")
     hcl_file.write("\t\t}\n")
-    hcl_file.write("\t}\n")    
+    hcl_file.write("\t}\n")
     hcl_file.write("}\n")
 
     # providers configuration
@@ -73,10 +74,10 @@ def create_hcl_file_to_upload(variables):
     hcl_file.write("}\n")
 
     # data
-    hcl_file.write(f"module \"{RUN_ID}\""+ " {\n")
+    hcl_file.write(f"module \"{RUN_ID}\"" + " {\n")
     hcl_file.write(f"\tsource = \"{module_name}//examples/{example}\"\n")
     hcl_file.write(f"\tversion = \"{version}\"\n")
-    
+
     for variable in variables:
         hcl_file.write(f"\t{variable['name']} = \"{variable['value']}\"\n")
 
@@ -103,7 +104,8 @@ def create_hcl_file_to_upload(variables):
 
     hcl_file.write("}\n")
     hcl_file.close()
-    
+
+
 def create_terraform_workspace(run_id):
     """
     Returns:
@@ -111,7 +113,8 @@ def create_terraform_workspace(run_id):
     This function uses TF_CLOUD_TOKEN from config
     """
 
-    headers = {'Authorization' : f'Bearer {TF_CLOUD_TOKEN}', 'Content-Type': 'application/vnd.api+json'}
+    headers = {'Authorization': f'Bearer {TF_CLOUD_TOKEN}',
+               'Content-Type': 'application/vnd.api+json'}
 
     workspace_payload = {
         "data": {
@@ -125,12 +128,15 @@ def create_terraform_workspace(run_id):
 
     requests.post(
         f"https://app.terraform.io/api/v2/organizations/{ORGANIATION_NAME}/workspaces", headers=headers, json=workspace_payload)
-    
+
+
 def main():
-    variables_list = [{"name": key, "value": value} for key, value in VARIABLES.items()]
-    
+    variables_list = [{"name": key, "value": value}
+                      for key, value in VARIABLES.items()]
+
     create_hcl_file_to_upload(variables_list)
     create_terraform_workspace(RUN_ID)
+
 
 if __name__ == '__main__':
     main()
