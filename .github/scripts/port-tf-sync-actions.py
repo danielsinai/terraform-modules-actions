@@ -226,12 +226,13 @@ def build_input(input, input_final_json_properties, input_final_json_required):
             "description": input['description'],
             "title": input['name'].replace('_', ' ').title(),
         }
-    else: 
+    else:
+        default_value = json.loads(input['default'])
         input_final_json_properties[input['name']] = {
             "type": type,
             "description": input['description'],
             "title": input['name'].replace('_', ' ').title(),
-            "default": input['default']
+            "default": default_value
         }
         
     if input['required']:
