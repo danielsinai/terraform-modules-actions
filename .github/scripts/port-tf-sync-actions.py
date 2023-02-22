@@ -221,15 +221,21 @@ def build_input(input, input_final_json_properties, input_final_json_required):
         type = 'object'
 
     if input['default'] == '' or input['default'] == None or input['default'] == 'null':
-        if input['required']:
-            input_final_json_required.append(input['name'])
-
         input_final_json_properties[input['name']] = {
             "type": type,
             "description": input['description'],
             "title": input['name'].replace('_', ' ').title(),
         }
-
+    else: 
+        input_final_json_properties[input['name']] = {
+            "type": type,
+            "description": input['description'],
+            "title": input['name'].replace('_', ' ').title(),
+            "default": input['default']
+        }
+        
+    if input['required']:
+        input_final_json_required.append(input['name'])
 def build_output(output, output_final_json_properties):
     type = 'string'
     format = None
