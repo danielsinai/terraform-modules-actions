@@ -94,7 +94,7 @@ def create_hcl_file_to_upload(variables):
 
     hcl_file.write("\tproperties {\n")
     hcl_file.write(f"\t\tname = \"inputs\"\n")
-    hcl_file.write(f"\t\tvalue = {VARIABLES}\n")
+    hcl_file.write(f"\t\tvalue = {json.dumps(VARIABLES)}\n")
     hcl_file.write("\t}\n")
 
     hcl_file.write("\tproperties {\n")
