@@ -185,6 +185,9 @@ def report_blueprints_to_port(token):
                 },
                 "configuration": {
                     "type": "object", "title": "Configuration"
+                },
+                "inputs": {
+                    "type": "object", "title": "Inputs"
                 }
             },
             "required": []
