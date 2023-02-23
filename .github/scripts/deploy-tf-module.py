@@ -16,7 +16,7 @@ ACTION_IDENTIFIER = json.loads(PORT_PAYLOAD)['payload']['action']['identifier']
 RUN_ID = json.loads(PORT_PAYLOAD)['context']['runId']
 VARIABLES = json.loads(PORT_PAYLOAD)['payload']['properties']
 BLUEPRINT_IDENTIFIER = json.loads(PORT_PAYLOAD)['context']['blueprint']
-# USER_EMAIL = json.loads(PORT_PAYLOAD)['trigger']['by']['user']['email']
+USER_EMAIL = json.loads(PORT_PAYLOAD)['trigger']['by']['user']['email']
 
 
 def create_hcl_file_to_upload(variables):
@@ -95,7 +95,7 @@ def create_hcl_file_to_upload(variables):
      
     json_string = json.dumps(VARIABLES, ensure_ascii=False).replace('"', '\\"')
     json_string = f'"{json_string}"'
-    
+
     hcl_file.write("\tproperties {\n")
     hcl_file.write(f"\t\tname = \"inputs\"\n")
     hcl_file.write(f"\t\tvalue = {json_string}\n")
@@ -103,6 +103,7 @@ def create_hcl_file_to_upload(variables):
 
     hcl_file.write("\tproperties {\n")
     hcl_file.write(f"\t\tname = \"creator\"\n")
+    hcl_file.write(f"\t\tvalue = \"{USER_EMAIL}\"\n")
     hcl_file.write("\t}\n")
 
     hcl_file.write("\trelations {\n")
@@ -143,7 +144,7 @@ def main():
                       for key, value in VARIABLES.items()]
 
     create_hcl_file_to_upload(variables_list)
-    # create_terraform_workspace(RUN_ID)
+    create_terraform_workspace(RUN_ID)
 
 
 if __name__ == '__main__':
